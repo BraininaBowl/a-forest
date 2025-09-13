@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <rect width="1024" height="1024" fill="#FBF1C7" fill-rule="evenodd" />
+    <path d="M216.241 654L173.759 654L173.759 546.384L0 546.384L0 522.114L173.759 88.4561L173.759 0L216.241 0L216.241 88.4561L390 522.114L390 546.384L216.241 546.384L216.241 654ZM173 498L173 214L67 498L173 498ZM321 498L216 224L216 498L321 498Z" fill="#98971A" transform="translate(317 185)" />
+  </g>
+</svg>
