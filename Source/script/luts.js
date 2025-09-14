@@ -108,36 +108,45 @@ const pois_lut = {
   climbing_tree: {
     id: "climbing_tree",
     req: "tree",
+    indication: "see an impressive tree",
   },
   ruin: {
     id: "ruin",
+    indication: "spot some kind of building",
   },
   deer: {
     id: "deer",
     exc: "water",
+    indication: "hear a quiet rustle",
   },
   waterfall: {
     id: "waterfall",
     req: "water",
+    indication: "hear rushing water",
   },
   clearing: {
     id: "clearing",
-    req: "tree",
+    exc: "water",
+    indication: "see an opening between the trees",
   },
   nuts: {
     id: "nuts",
     req: "tree",
+    indication: "see nothing in particular"
   },
   stream: {
     id: "stream",
     req: "water",
+    indication: "hear a gentle sound",    
   },
   spiderweb: {
     id: "spiderweb",
     req: "tree",
+    indication: "see nothing in particular",
   },
   flower: {
     id: "flower",
+    indication: "notice a flash of color",
   },
 };
 

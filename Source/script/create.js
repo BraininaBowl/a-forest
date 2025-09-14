@@ -18,7 +18,7 @@ function start() {
             container: "nearest",
             inline: "center",
           });
-          document.querySelector(".maplayer").classList.remove("hidden")
+          document.querySelector(".maplayer").classList.remove("hidden");
           player.progress = 1;
           start();
         },
@@ -111,6 +111,15 @@ function start() {
 
 function theEnd() {}
 
+function nextStop() {
+  let stops = findPois();
+  message = {};
+  message.voice = false;
+  message.text =
+    "To the north, you " + pois_lut[stops.n].indication +".";
+  addMessage(message);
+}
+
 function actor(x, y, type) {
   this.status = [];
   this.inventory = [];
@@ -126,6 +135,7 @@ function actor(x, y, type) {
   if (type == "player") {
     this.id = "player";
     this.progress = 0;
+    this.seen = {};
   } else {
     this.id = actors.length + 1;
   }
@@ -426,8 +436,18 @@ function newMap(width, height) {
 
       let poi_template =
         pois_lut[pois_lut_keys[getRandomInt(pois_lut_keys.length)]];
-      if (
-        poi_template == undefined ||
+      if (poi_template == undefined) {
+        return false;
+      } else if ((poi_template.id == "waterfall") || (poi_template.id == "stream")) {
+        this.setCell(poi.x, poi.y, null);
+        this.setCell(poi.x, poi.y - 1, "water");
+        this.setCell(poi.x - 1, poi.y - 1, "water");
+        this.setCell(poi.x + 1, poi.y - 1, "water");
+        this.setCell(poi.x, poi.y - 2, "water");
+        poi.type = poi_template.id;
+        this.pois.push(poi);
+        return true;
+      } else if (
         (poi_template.req && poi_template.req != tryCell) ||
         (poi_template.exc && poi_template.exc == tryCell)
       ) {
@@ -467,7 +487,7 @@ function newMap(width, height) {
       }
     }
     this.addCamp(width / 2, height / 2);
-    let targetPois = limit(Math.ceil((width * height) / 300), 30, 9999);
+    let targetPois = limit(Math.ceil((width * height) / 300), 50, 9999);
     let placedPois = 0;
     while (placedPois < targetPois) {
       if (this.addPoi()) {

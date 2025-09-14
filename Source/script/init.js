@@ -4,12 +4,12 @@ let messages = new Array();
 let processingMessages = false;
 // OPTIONS
 let options = {};
-options.cellsize = 18;
+options.cellsize = 20;
 
 document.body.style.fontSize = options.cellsize * 0.75 + "px";
 document.body.style.lineHeight = options.cellsize + "px";
 
-let map = new newMap(100, 80);
+let map = new newMap(80, 60);
 map.create();
 renderMap(map);
 start();
