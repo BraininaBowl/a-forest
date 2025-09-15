@@ -108,7 +108,8 @@ function theEnd() {
   pois_lut_keys.forEach((item) => {
     player.seen[item] = 0;
   });
-  let map = new newMap(80, 60);
+  document.querySelector(".maplayer").remove();
+  map = new newMap(80, 60);
   map.create();
   renderMap(map);
   start();

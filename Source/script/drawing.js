@@ -28,40 +28,6 @@ function renderMap(map) {
   mapcontainer.appendChild(maplayer);
 }
 
-/*
-function drawActor(data) {
-  let mapcell = document.createElement("div");
-  mapcell.classList = "cell mapcell_actor darker mapcell_actor_" + data.id;
-  mapcell.innerHTML = data.symbol;
-  mapcell.setAttribute("data-text", data.symbol);
-  mapcell.style.left = data.pos.x * options.cellsize + 1 + "px";
-  mapcell.style.top = data.pos.y * options.cellsize + 1 + "px";
-  mapcell.style.fontSize = options.cellsize - 2 + "px";
-  mapcell.style.lineHeight = options.cellsize - 2 + "px";
-  mapcell.style.width = options.cellsize - 2 + "px";
-  mapcell.style.height = options.cellsize - 2 + "px";
-  document.querySelectorAll(".actorlayer").forEach((item) => {
-    item.appendChild(mapcell);
-  });
-}
-*/
-
-/*
-function drawFov(map) {
-  document.querySelectorAll(".lit").forEach((cell) => {
-    cell.classList.remove("lit");
-  });
-
-  let rooms = getRoomsForPoint(player.pos.x, player.pos.y, map, 1);
-
-  for (i = 0; i < rooms.length; i++) {
-    document.querySelectorAll("." + rooms[i]).forEach((cell) => {
-      cell.classList.add("seen");
-      cell.classList.add("lit");
-    });
-  }
-}*/
-
 function addMessage(message) {
   messages.push(message);
   if (processingMessages == false) {

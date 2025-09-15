@@ -86,7 +86,7 @@ function restAtCamp() {
           message.choices[1] = {
             text: "[Go for it]",
             action: function () {
-              theEnd()
+              theEnd();
             },
           };
           addMessage(message);
@@ -108,7 +108,7 @@ function restAtCamp() {
           message.choices[1] = {
             text: "[Go for it]",
             action: function () {
-              theEnd()
+              theEnd();
             },
           };
           addMessage(message);

@@ -434,7 +434,7 @@ const pois_lut = {
         message = {};
         message.voice = "rebel";
         message.text =
-          "Oh, man. I just know there were knights here. And do you see that blackened spot? That's dragonfire! The dragon propbably came here looking for a princess.";
+          "Oh, man. I just know there were knights here. And do you see that blackened spot? That's dragonfire! The dragon probably came here looking for a princess.";
         addMessage(message);
         message = {};
         message.voice = "kid";
@@ -646,7 +646,7 @@ const pois_lut = {
                 message = {};
                 message.voice = false;
                 message.text =
-                  "You stand across the pool, looking at the deer. It wiggles it's ears, then disappearing between the trees.";
+                  "You stand across the pool, looking at the deer. It wiggles it's ears, then disappears between the trees.";
                 addMessage(message);
                 message = {};
                 message.choices = new Array();
