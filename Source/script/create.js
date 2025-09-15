@@ -86,7 +86,7 @@ function start() {
       message.choices[1] = {
         text: "[Continue]",
         action: function () {
-          theEnd();
+          restAtCamp();
         },
       };
       addMessage(message);
@@ -96,39 +96,128 @@ function start() {
       message.voice = false;
       message.text = "You get up and head into the forest.";
       addMessage(message);
-      message = {};
-      message.choices = new Array();
-      message.choices[1] = {
-        text: "[Continue]",
-        action: function () {
-          theEnd();
-        },
-      };
-      addMessage(message);
+      nextStop();
       break;
   }
 }
 
-function theEnd() {}
+function theEnd() {
+  player.progress = 0;
+  player.inventory = [];
+  player.seen = {};
+  pois_lut_keys.forEach((item) => {
+    player.seen[item] = 0;
+  });
+  let map = new newMap(80, 60);
+  map.create();
+  renderMap(map);
+  start();
+}
 
 function nextStop() {
+  player.progress += 1;
+  let progressTop = 16;
+  if (player.progress == progressTop) {
+    message = {};
+    message.voice = "practical";
+    message.text =
+      "You know, you've been out here for a while. Maybe it's time to head back to camp?";
+    addMessage(message);
+  }
+
   let stops = findPois();
   message = {};
   message.voice = false;
-  message.text =
-    "To the north, you " + pois_lut[stops.n].indication +".";
+  message.text = "";
+
+  if (stops.n) {
+    message.text +=
+      "To the north, you " +
+      pois_lut[stops.n.type].indication[
+        getRandomInt(pois_lut[stops.n.type].indication.length - 1)
+      ] +
+      ". ";
+  }
+  if (stops.w) {
+    message.text +=
+      "In the west, you " +
+      pois_lut[stops.w.type].indication[
+        getRandomInt(pois_lut[stops.w.type].indication.length - 1)
+      ] +
+      ". ";
+  }
+  if (stops.s) {
+    message.text +=
+      "To the south, you " +
+      pois_lut[stops.s.type].indication[
+        getRandomInt(pois_lut[stops.s.type].indication.length - 1)
+      ] +
+      ". ";
+  }
+  if (stops.e) {
+    message.text +=
+      "To the east you " +
+      pois_lut[stops.e.type].indication[
+        getRandomInt(pois_lut[stops.e.type].indication.length - 1)
+      ] +
+      ". ";
+  }
+  addMessage(message);
+
+  message = {};
+  message.choices = new Array();
+  let numchoice = 0;
+  if (player.progress >= progressTop) {
+    message.choices[numchoice] = {
+      text: "[Back to camp]",
+      action: function () {
+        backToCamp();
+      },
+    };
+    numchoice++;
+  }
+  if (stops.n) {
+    message.choices[numchoice] = getPoiChoice(stops.n, "north");
+    numchoice++;
+  }
+  if (stops.w) {
+    message.choices[numchoice] = getPoiChoice(stops.w, "west");
+    numchoice++;
+  }
+  if (stops.s) {
+    message.choices[numchoice] = getPoiChoice(stops.s, "south");
+    numchoice++;
+  }
+  if (stops.e) {
+    message.choices[numchoice] = getPoiChoice(stops.e, "east");
+    numchoice++;
+  }
   addMessage(message);
 }
 
 function actor(x, y, type) {
   this.status = [];
   this.inventory = [];
-  this.addItem = function (item, removeFromMap = false) {
-    if (this.inventory.length < this.maxinventory) {
-      this.inventory.push(item);
-      if (removeFromMap) {
-        deleteItem(item.id);
-      }
+  this.addItem = function (item) {
+    this.inventory.push(item);
+    let message = {};
+    message.voice = "gotitem";
+    message.text = item;
+    addMessage(message);
+  };
+  this.removeItem = function (item) {
+    let removed = false;
+    this.inventory = removeDuplicates(this.inventory);
+    const index = this.inventory.indexOf(item);
+    if (index > -1) {
+      this.inventory.splice(index, 1);
+      removed = true;
+    }
+    if (removed) {
+      let message = {};
+      message.voice = "lostitem";
+      message.text = item;
+      addMessage(message);
     }
   };
 
@@ -136,18 +225,17 @@ function actor(x, y, type) {
     this.id = "player";
     this.progress = 0;
     this.seen = {};
+    pois_lut_keys.forEach((item) => {
+      this.seen[item] = 0;
+    });
   } else {
     this.id = actors.length + 1;
   }
 
-  this.seen = false;
   this.visible = false;
   this.pos = {};
   this.pos.x = x;
   this.pos.y = y;
-  this.aware = false;
-  this.awareX = false;
-  this.awareY = false;
   this.type = type;
 
   this.sees = function (x, y, usecover = false) {
@@ -177,7 +265,7 @@ function actor(x, y, type) {
     document.querySelector(".maplayer").appendChild(mapcell);
 
     document.querySelector(".mapcell.player").scrollIntoView({
-      behavior: "instant",
+      behavior: "smooth",
       block: "center",
       container: "nearest",
       inline: "center",
@@ -438,14 +526,18 @@ function newMap(width, height) {
         pois_lut[pois_lut_keys[getRandomInt(pois_lut_keys.length)]];
       if (poi_template == undefined) {
         return false;
-      } else if ((poi_template.id == "waterfall") || (poi_template.id == "stream")) {
+      } else if (
+        poi_template.id == "waterfall" ||
+        poi_template.id == "stream"
+      ) {
         this.setCell(poi.x, poi.y, null);
         this.setCell(poi.x, poi.y - 1, "water");
         this.setCell(poi.x - 1, poi.y - 1, "water");
         this.setCell(poi.x + 1, poi.y - 1, "water");
         this.setCell(poi.x, poi.y - 2, "water");
         poi.type = poi_template.id;
-        this.pois.push(poi);
+        poi.id = "poi" + poi.x + "-" + poi.y;
+        this.pois[poi.id] = poi;
         return true;
       } else if (
         (poi_template.req && poi_template.req != tryCell) ||
@@ -460,7 +552,9 @@ function newMap(width, height) {
           poi.x = location[0];
           poi.y = location[1];
         }
-        this.pois.push(poi);
+        poi.id = "poi" + poi.x + "-" + poi.y;
+        this.pois[poi.id] = poi;
+        this.setCell(poi.x, poi.y, null);
         return true;
       }
     };
@@ -487,7 +581,7 @@ function newMap(width, height) {
       }
     }
     this.addCamp(width / 2, height / 2);
-    let targetPois = limit(Math.ceil((width * height) / 300), 50, 9999);
+    let targetPois = limit(Math.ceil((width * height) / 300), 40, 9999);
     let placedPois = 0;
     while (placedPois < targetPois) {
       if (this.addPoi()) {

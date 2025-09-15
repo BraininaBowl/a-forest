@@ -13,5 +13,12 @@ let map = new newMap(80, 60);
 map.create();
 renderMap(map);
 start();
+document.querySelector(".mapcell.player").scrollIntoView({
+  behavior: "instant",
+  block: "center",
+  container: "nearest",
+  inline: "center",
+});
+//nextStop();
 
 /*drawTitleScreen();*/

@@ -1,15 +1,153 @@
-function testMessage() {
-  let message = {};
-  //message.voice = "practical";
-  message.text = "Testing testing. One. Two. Three";
+function backToCamp() {
+  player.move(map.width / 2 - 1, map.height / 2 + 2);
+  message = {};
+  message.voice = false;
+  message.text =
+    "You return to camp and settle down, taking some weight off from your tired feet.";
+  addMessage(message);
+  message = {};
+  message.voice = false;
+  message.text =
+    "Your mind is filled to the brim with today's experiences. What will you do with them?";
+  addMessage(message);
+  message = {};
   message.choices = new Array();
   message.choices[1] = {
-    text: "Test 1",
+    text: "[Write a poem]",
     action: function () {
-      testMessage();
+      message = {};
+      message.voice = false;
+      message.text = "You grab your notebook and start writing.";
+      addMessage(message);
+      restAtCamp();
     },
   };
-  writeToLog(message);
+  message.choices[2] = {
+    text: "[Sketch some of the landscapes]",
+    action: function () {
+      message = {};
+      message.voice = false;
+      message.text = "You grab your sketchbook and start drawing.";
+      addMessage(message);
+      restAtCamp();
+    },
+  };
+  message.choices[3] = {
+    text: "[Do nothing, just sit and ponder]",
+    action: function () {
+      message = {};
+      message.voice = false;
+      message.text = "You sit back contently.";
+      addMessage(message);
+      restAtCamp();
+    },
+  };
+  addMessage(message);
+}
+
+function restAtCamp() {
+  document.querySelector(".maplayer").classList.add("hidden");
+  message = {};
+  message.voice = "practical";
+  message.text = "You know...";
+  addMessage(message);
+  message = {};
+  message.choices = new Array();
+  message.choices[1] = {
+    text: "[What?]",
+    action: function () {
+      message = {};
+      message.voice = "practical";
+      message.text = "Today was a pretty good day.";
+      addMessage(message);
+      message = {};
+      message.voice = "rebel";
+      message.text = "Yeah.";
+      addMessage(message);
+      message = {};
+      message.voice = "cynic";
+      message.text = "You know, it actually was.";
+      addMessage(message);
+      message = {};
+      message.choices = new Array();
+      message.choices[1] = {
+        text: "Yeah",
+        action: function () {
+          message = {};
+          message.voice = "hope";
+          message.text = "And tomorrow...";
+          addMessage(message);
+          message = {};
+          message.voice = "hope";
+          message.text = "... we can have another one!";
+          addMessage(message);
+          message = {};
+          message.choices = new Array();
+          message.choices[1] = {
+            text: "[Go for it]",
+            action: function () {
+              theEnd()
+            },
+          };
+          addMessage(message);
+        },
+      };
+      message.choices[2] = {
+        text: "Not really",
+        action: function () {
+          message = {};
+          message.voice = "hope";
+          message.text = "Oh...";
+          addMessage(message);
+          message = {};
+          message.voice = "hope";
+          message.text = "But tomorrow we can try again!";
+          addMessage(message);
+          message = {};
+          message.choices = new Array();
+          message.choices[1] = {
+            text: "[Go for it]",
+            action: function () {
+              theEnd()
+            },
+          };
+          addMessage(message);
+        },
+      };
+      addMessage(message);
+    },
+  };
+  addMessage(message);
+}
+
+function goToNextStop() {
+  message = {};
+  message.choices = new Array();
+  message.choices[1] = {
+    text: "[Continue]",
+    action: function () {
+      nextStop();
+    },
+  };
+  addMessage(message);
+}
+
+function getPoiChoice(poi, dir) {
+  let choice = {
+    text: "[Go " + dir + "]",
+    action: function () {
+      player.move(poi.x, poi.y);
+      if (pois_lut[poi.type].action["a" + player.seen[poi.type]] == undefined) {
+        player.seen[poi.type] -= 1;
+      }
+      pois_lut[poi.type].action["a" + player.seen[poi.type]]();
+      player.seen[poi.type] += 1;
+
+      delete map.pois[poi.id];
+      //nextStop()
+    },
+  };
+  return choice;
 }
 
 function runEvents() {
@@ -26,29 +164,30 @@ function findPois() {
   let pois_west = new Array();
   let pois_east = new Array();
   //Sort all pois relative to the player
-  map.pois.forEach((item) => {
-    let rel_x = Math.abs(player.x - item.x);
-    let rel_y = Math.abs(player.y - item.y);
-    if (rel_x < rel_y) {
+  for (let value of Object.values(map.pois)) {
+    let rel_x = Math.abs(player.x - value.x);
+    let rel_y = Math.abs(player.y - value.y);
+    if (rel_x > rel_y) {
       //east or west
-      if (player.x > item.x) {
+      if (player.x > value.x) {
         // west
-        pois_west[rel_x + rel_y] = item.type;
-      } else if (player.x < item.x) {
+        pois_west[rel_x + rel_y] = value;
+      } else if (player.x < value.x) {
         // east
-        pois_east[rel_x + rel_y] = item.type;
+        pois_east[rel_x + rel_y] = value;
       }
     } else {
       //north or south
-      if (player.y > item.y) {
+      if (player.y > value.y) {
         // north
-        pois_north[rel_x + rel_y] = item.type;
-      } else if (player.y < item.y) {
+        pois_north[rel_x + rel_y] = value;
+      } else if (player.y < value.y) {
         // south
-        pois_south[rel_x + rel_y] = item.type;
+        pois_south[rel_x + rel_y] = value;
       }
     }
-  });
+  }
+
   return {
     n: pois_north.find((x) => x !== undefined),
     s: pois_south.find((x) => x !== undefined),
