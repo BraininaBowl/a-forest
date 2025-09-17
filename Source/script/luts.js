@@ -456,6 +456,15 @@ const pois_lut = {
         message.text =
           "Another ruin. You don't dare speculating on any fairytale inhabitants";
         addMessage(message);
+        message = {};
+        message.choices = new Array();
+        message.choices[1] = {
+          text: "[Move on]",
+          action: function () {
+            nextStop();
+          },
+        };
+        addMessage(message);
       },
     },
   },
